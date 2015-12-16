@@ -24,8 +24,8 @@ class NewVisitorTest(unittest.TestCase):
 		#User is invited to enter a to-do item
 		inputbox = self.browser.find_element_by_id('id_new_item')
 		self.assertEqual(
-			inputpox.get_attribute('placeholder'),
-			'Enter a to-do item'
+			inputbox.get_attribute('placeholder'),
+			'Enter a To-Do item'
 			)
 		#User types "Become a programming guru" in the text box
 		inputbox.send_keys("Become a programming guru")
@@ -36,7 +36,7 @@ class NewVisitorTest(unittest.TestCase):
 		table = self.browser.find_element_by_id('id_list_table')
 		rows=table.find_elements_by_tag_name('tr')
 		self.assertTrue(
-			any(row.text == 'Become a programming guru' for row in rows))
+			any(row.text == 'Become a programming guru' for row in rows),"New to-do item did not appear in the table")
 #There is still a text box inviting to add new item, so user types "Learn about philosophy"
 		self.fail("Finish the Test!")
 
