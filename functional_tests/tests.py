@@ -35,6 +35,9 @@ class NewVisitorTest(LiveServerTestCase):
 		#User types "Become a programming guru" in the text box, presses ENTER, then types "Learn philosophy" and hits ENTER again
 		inputbox.send_keys("Become a programmer guru")
 		inputbox.send_keys(Keys.ENTER)
+		edith_list_url=self.browser.current_url
+		self.assertRegex(edith_list_url, '/lists/.+')
+		self.check_for_row_in_list_table('1: Become a programmer guru')
 		
 		inputbox = self.browser.find_element_by_id("id_new_item")
 		inputbox.send_keys("Learn philosophy")
@@ -43,11 +46,36 @@ class NewVisitorTest(LiveServerTestCase):
 
 		self.check_for_row_in_list_table("1: Become a programmer guru")
 		self.check_for_row_in_list_table("2: Learn philosophy")
-#Page updates again and shows both items on the list
 
-#Site generates unique URL for user and informs him about that
+#User 2 now comes to the computer
 
-#User visits given URL and sees previously created list
+##We start new browser session to assure that User 2 doesn't see any information from User 1 via cookies etc.
 
-#User closes browser
+		self.browser.quit()
+		self.browser=webdriver.Firefox()
+
+#User 2 visits homepage and there is no sign of User 1 content
+
+		self.browser.get(self.live_server_url)
+		page_text = self.browser.find_element_by_tag_name('body').text
+		self.assertNotIn('Become a programmer guru',page_text)
+		self.assertNotIn('philosophy', page_text)
+
+#User 2 starts new list by entering an item
+
+		inputbox=self.browser.find_element_by_id('id_new_item')
+		inputbox.send_keys('Buy milk')
+		inputbox.send_keys(Keys.ENTER)
+
+#User 2 gets his own unique URL
+
+		francis_list_url = self.browser.current_url
+		self.assertRegex(francis_list_url, '/lists/.+')
+		self.assertNotEqual(francis_list_url,edith_list_url)
+
+#There is no trace of User 1 list
+
+		page_text=self.browser.find_element_by_tag_name('body').text
+		self.assertNotIn('programmer guru',page_text)
+		self.assertIn('Buy milk', page_text)
 
